@@ -1,0 +1,58 @@
+gem_root = File.expand_path(File.dirname(__FILE__))
+namespace :mutant do
+<%- if bundler? -%>
+  desc 'Run mutant'
+  task :coverage do
+    require 'mutant'
+
+    # For this specific project 4 threads on CI perform best
+    jobs = ENV.key?('CI') ? 4 : Mutant::Config::DEFAULT.jobs
+
+    # Note: Increase your score value once you've actually written tests.
+    arguments = %W[
+    <%- if rspec? -%>
+      --use rspec
+    <%- end -%>
+      --jobs #{jobs}
+      --score 0
+      --fail-fast
+      --include lib
+      --require <%= @name %>
+      --
+      <%= @namespace %>
+    ]
+
+    status = Mutant::CLI.run(arguments)
+  end
+<%- else -%>
+  begin
+    require 'mutant'
+
+    desc 'Run mutant'
+    task :coverage do
+      # For this specific project 4 threads on CI perform best
+      jobs = ENV.key?('CI') ? 4 : Mutant::Config::DEFAULT.jobs
+
+      # Note: Increase your score value once you've actually written tests.
+      arguments = %W[
+      <%- if rspec? -%>
+        --use rspec
+      <%- end -%>
+        --jobs #{jobs}
+        --score 0
+        --fail-fast
+        --include lib
+        --require <%= @name %>
+        --
+        <%= @namespace %>
+      ]
+
+      status = Mutant::CLI.run(arguments)
+    end
+  rescue LoadError => e
+    task :coverage do
+      warn e.message
+    end
+  end
+<%- end -%>
+end

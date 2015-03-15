@@ -1,0 +1,14 @@
+development_dependencies:
+  mutant:
+  - '~> 0.7'
+  - '>= 0.7.8'
+  # Ore doesn't seem to have a way to conditionally include this only if RSpec
+  # is in use.
+  mutant-rspec:
+  - '~> 0.7'
+  - '>= 0.7.8'
+  # We need to explicitly declare our RSpec dependency because the default one
+  # that Ore provides is too old and conflicts with the one Mutant uses.
+  rspec:
+  - '< 3.3.0'
+  - '>= 3.0.0'
